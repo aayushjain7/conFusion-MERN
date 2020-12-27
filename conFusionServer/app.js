@@ -16,23 +16,28 @@ var promoRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
 var uploadRouter = require('./routes/uploadRouter');
 var favRouter = require('./routes/favRouter');
+var commentRouter = require('./routes/commentRouter');
 
 const mongoose = require('mongoose');
 const Dishes = require('./models/dishes');
-const url =config.mongoUrl;
+const url = config.mongoUrl;
 const connect = mongoose.connect(url);
 
-connect.then((db) => {
-  console.log('Connected correctly to the server');
-},(err) => { console.log(err); });
+connect.then(
+  (db) => {
+    console.log('Connected correctly to the server');
+  },
+  (err) => {
+    console.log(err);
+  }
+);
 
 var app = express();
-app.all('*', (req, res, next)=> {
-  if(req.secure){
+app.all('*', (req, res, next) => {
+  if (req.secure) {
     return next();
-  }
-  else {
-    res.redirect(307, 'https://'+req.hostname+":"+app.get('secPort')+req.url);
+  } else {
+    res.redirect(307, 'https://' + req.hostname + ':' + app.get('secPort') + req.url);
   }
 });
 
@@ -53,18 +58,19 @@ app.use('/users', usersRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/dishes', dishRouter);
-app.use('/promotions',promoRouter);
+app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
 app.use('/imageUpload', uploadRouter);
-app.use('/favorites', favRouter)
+app.use('/favorites', favRouter);
+app.use('/comments', commentRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
